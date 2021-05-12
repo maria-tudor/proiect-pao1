@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Professor extends Person{
+public class Professor extends Person {
     ArrayList<Subject> subjects = new ArrayList<Subject>();
     ArrayList<Student> students= new ArrayList<Student>();
     private String position;

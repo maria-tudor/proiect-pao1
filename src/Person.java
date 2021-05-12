@@ -15,9 +15,7 @@ abstract class Person {
         this.age += 1;
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
     public void setName(String nm) {
         this.name = nm;

@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+
 public class Subject {
     ArrayList<Professor> professors= new ArrayList<Professor>();
     private String name;

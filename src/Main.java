@@ -1,7 +1,17 @@
-import java.text.ParseException;
-import java.util.Scanner;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Main {
+    public static void main(String[] vals) throws Exception {
+        Date data = new SimpleDateFormat("dd/MM/yyyy").parse("20/06/2015");
+        System.out.println(data);
+        Facultate college = new Facultate();
+        Menu menu = new Menu (college);
+
+        menu.console ();
+    }
+}
+    /*
 // Meniul mai trebuie modificat deoarece am o problema cu input-urile, dar am apelat majoritatea functiilor direct aici
     public static void main(String[] args) throws ParseException {
         Scanner in = new Scanner(System.in);
@@ -29,8 +39,8 @@ public class Main {
         prof2.addSubject(sub2);
         prof3.addSubject(sub3);
         prof4.addSubject(sub4);
-        college.addProfessorToCollege(prof1);
-        college.addProfessorToCollege(prof2);
+        college.addProfessor(prof1);
+        college.addProfessor(prof2);
         college.addProfessorToCollege(prof3);
         college.addProfessorToCollege(prof4);
         college.addSubjectToCollege(sub1);
@@ -58,6 +68,7 @@ public class Main {
         sub1.display();
         mark1.display();
         /*CONVERTIE DATA!!!*/
+    /*
         prof2.increaseYearsOfExperience();
         prof2.increaseAge();
         System.out.println(prof2.getAge());
@@ -405,6 +416,6 @@ public class Main {
 
         System.out.println("La revedere!");
 
- */
+
     }
-}
+*/

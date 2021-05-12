@@ -54,7 +54,7 @@ public class Mark {
 
     public void showSubjectDetails(){ this.subject.display(); }
 
-    public String getProfessorName(){ return this.student.getName(); }
+    public String getProfessorName(){ return this.professor.getName(); }
 
     public String getSubjectName(){ return this.subject.getName(); }
 

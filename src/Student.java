@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 
+
 public class Student extends Person {
     ArrayList<Subject> subjects= new ArrayList<Subject>();
     ArrayList<Mark> marks= new ArrayList<Mark>();
@@ -61,4 +62,10 @@ public class Student extends Person {
             System.out.print(marks.get(i).getValue() + " ");
         }
     }
+
+    public void           addMark (Mark newMark) { this.marks.add (newMark); }
+
+    public ArrayList<Mark> getMarks () { return this.marks; }
+
+    public ArrayList<Subject> getSubjects () { return this.subjects; }
 }
