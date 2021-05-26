@@ -1,20 +1,34 @@
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class Menu
 {
     private Facultate college;
 
-
     public Menu (Facultate fac)
     {
         college = fac;
+    }
+
+    private Statement establishConn(){
+    try {
+
+        Connection conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/jdbc-pao", "root", "pao1234");
+
+        Statement statement = conn.createStatement();
+
+        return statement;
+
+    }catch(Exception e){
+        e.printStackTrace();
+        return null;
+    }
+
     }
 
     private void saveData () {
@@ -33,6 +47,20 @@ public class Menu
         this.college.loadMarks (CSVProc.getNewCSVProc ().loadCSV ( "marks.csv"));
     }
 
+    private void jdbcShowProfessors(){
+        Statement statement = establishConn();
+        try {
+            ResultSet resultSet = statement.executeQuery("select * from professor;");
+            System.out.println ("Profesori: (nume, varsta, gen, pozitie, ani de experienta)");
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString("name") + " " + resultSet.getInt("age")
+                        + " " + resultSet.getString("sex") + " " + resultSet.getString("position") +
+                        " " + resultSet.getInt("years_of_experience"));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
 
     private void menuShowProfessors ()
     {
@@ -50,6 +78,22 @@ public class Menu
             System.out.println ("\tNu exista profesori inregistrati");
 
         System.out.println();
+    }
+
+    private void jdbcShowStudents(){
+        Statement statement = establishConn();
+        try {
+            ResultSet resultSet = statement.executeQuery("select * from student;");
+            System.out.println ("Studenti: (nume, varsta, gen, specialitate, an)");
+            while (resultSet.next()) {
+
+                System.out.println(resultSet.getString("name") + " " + resultSet.getInt("age")
+                + " " + resultSet.getString("sex") + " " + resultSet.getString("major") +
+                        " " + resultSet.getInt("year"));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void menuShowStudents ()
@@ -70,6 +114,21 @@ public class Menu
         System.out.println();
     }
 
+    private void jdbcShowSubjects(){
+        Statement statement = establishConn();
+        try {
+            ResultSet resultSet = statement.executeQuery("select * from subject;");
+            System.out.println ("Materii: (nume, semestre, domeniu)");
+            while (resultSet.next()) {
+
+                System.out.println(resultSet.getString("name")+ " " + resultSet.getInt("semesters")
+                        + " " +resultSet.getString("field"));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
     private void menuShowSubjects ()
     {
         ArrayList <Subject> subjects = this.college.getSubjects ();
@@ -86,6 +145,22 @@ public class Menu
             System.out.println ("\tNu exista materii inregistrate");
 
         System.out.println();
+    }
+
+    private void jdbcShowMarks(){
+        Statement statement = establishConn();
+        try {
+            ResultSet resultSet = statement.executeQuery("select * from mark;");
+            System.out.println ("Note: (nume student, nume profesor, materie, data, valoare)");
+            while (resultSet.next()) {
+
+                System.out.println(resultSet.getString("studentname")+ " " +
+                        resultSet.getString("profname") + " " + resultSet.getString("subject") +
+                        " " + resultSet.getDate("date") + " " + resultSet.getInt("value"));
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void menuShowMarks ()
@@ -111,15 +186,54 @@ public class Menu
         this.college.clearData ();
     }
 
+    private void jdbcAddStudent (String nm, int ag, String sx, String mjr, int yr)
+    {
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("INSERT INTO student VALUES " +
+                    "('"+nm+"','"+ag+"','"+sx+"','"+mjr+"','"+yr+"')");
+            this.college.addStudent (nm, ag, sx, mjr,yr);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
 
     private void menuAddStudent (String nm, int ag, String sx, String mjr, int yr)
     {
         this.college.addStudent (nm, ag, sx, mjr,yr);
     }
 
+    private void jdbcAddProfessor (String nm, int ag, String sx, String pos, int yrsexp)
+    {
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("INSERT INTO professor VALUES " +
+                    "('"+nm+"','"+ag+"','"+sx+"','"+pos+"','"+yrsexp+"')");
+            this.college.addProfessor (nm, ag, sx, pos, yrsexp);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
     private void menuAddProfessor (String nm, int ag, String sx, String pos, int yrexp)
     {
         this.college.addProfessor (nm, ag, sx, pos, yrexp);
+    }
+
+    private void jdbcAddSubject (String nm, int sem, String fld)
+    {
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("INSERT INTO subject VALUES " +
+                    "('"+nm+"','"+sem+"','"+fld+"')");
+            this.college.addSubject (nm, sem, fld);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     private void menuAddSubject (String nm, int sem, String fld)
@@ -127,11 +241,120 @@ public class Menu
         this.college.addSubject (nm, sem, fld);
     }
 
-    private void menuAddMark (String nmstud, String nmprof, String nmsub, String date, int val) throws Exception {
-        this.college.addMark (college.findStudent(nmstud), college.findProfessor(nmprof), college.findSubject(nmsub),
-                new SimpleDateFormat("dd/MM/yyyy").format(date), val);
+    private void jdbcAddMark (String nmstud, String nmprof, String nmsub, String date, int val)
+    {
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("INSERT INTO mark VALUES " +
+                    "('"+nmstud+"','"+nmprof+"','"+nmsub+"','"+date+"','"+val+"')");
+            this.college.addMark (college.findStudent(nmstud), college.findProfessor(nmprof), college.findSubject(nmsub),
+                    date, val);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
     }
 
+    private void menuAddMark (String nmstud, String nmprof, String nmsub, String date, int val) throws Exception {
+        this.college.addMark (college.findStudent(nmstud), college.findProfessor(nmprof), college.findSubject(nmsub),
+                date, val);
+    }
+
+    private void jdbcRemoveStudent(String nm){
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("delete from student where name = '"+ nm+"';");
+            this.college.removeStudent(nm);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void jdbcRemoveProfessor(String nm){
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("delete from professor where name = '" + nm +"';");
+            this.college.removeProfessor(nm);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void jdbcRemoveSubject(String nm){
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("delete from subject where name = '"+ nm + "';");
+            this.college.removeSubject(nm);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void jdbcRemoveMark(String nmstud, String nmprof, String nmsub, String date){
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("delete from mark where studentname = '" + nmstud + "' and profname = '" +
+                    nmprof + "' and subject = '" + nmsub  + "' and date = '" + date + "';");
+            this.college.removeMark(nmstud, nmprof, nmsub, date);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void jdbcUpdateMark(String nmstudVechi, String nmprofVechi, String nmsubVechi, String dateVechi,
+                                int val){
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("update mark set value = " + val +
+                    " where studentname = '" + nmstudVechi + "' and profname = '" + nmprofVechi +
+                    "' and subject = '" + nmsubVechi + "' and date = '" + dateVechi + "';");
+            this.college.updateMark(nmstudVechi, nmprofVechi, nmsubVechi, dateVechi, val);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void jdbcUpdateStudent(String nmVechi, String nm, int ag, String mjr, int yr){
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("update student set name = '" + nm + "', age = " +
+                    ag + ", major = '" + mjr +"', year = " + yr +
+                    " where name = '" + nmVechi + "';");
+            this.college.updateStudent(nmVechi, nm, ag, mjr, yr);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private void jdbcUpdateProfessor(String nmVechi, String nm, int ag, String pos, int yrsexp){
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("update professor set name = '" + nm + "', age = " +
+                    ag + ", position = '" + pos +"', years_of_experience = " + yrsexp +
+                    " where name = '" + nmVechi + "';");
+            this.college.updateProfessor(nmVechi, nm, ag, pos, yrsexp);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    private void jdbcUpdateSubject(String nmVechi, String nm, int sem){
+        Statement statement = establishConn();
+        try{
+            statement.executeUpdate("update subject set name = '" + nm + "', semesters = " +
+                    sem + " where name = '" + nmVechi + "';");
+            this.college.updateSubject(nmVechi, nm, sem);
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
 
     private void clear ()
     {
@@ -261,46 +484,91 @@ public class Menu
 
             case "adaugareStudent":
                 this.lenCheck(vals, 7, true);
-                menuAddStudent (vals.get (1) + " " + vals.get (2), Integer.parseInt(vals.get (3)),
+                jdbcAddStudent (vals.get (1) + " " + vals.get (2), Integer.parseInt(vals.get (3)),
                         vals.get(4), vals.get(5), Integer.parseInt(vals.get(6)));
                 break;
 
             case "adaugareProfesor":
                 this.lenCheck(vals, 7, true);
-                menuAddProfessor(vals.get(1) + " " + vals.get(2), Integer.parseInt(vals.get(3)), vals.get(4), vals.get(5),
+                jdbcAddProfessor(vals.get(1) + " " + vals.get(2), Integer.parseInt(vals.get(3)), vals.get(4), vals.get(5),
                         Integer.parseInt(vals.get(6)));
                 break;
 
             case "adaugareMaterie":
                 this.lenCheck(vals, 4, true);
-                menuAddSubject(vals.get(1), Integer.parseInt(vals.get(2)), vals.get(3));
+                jdbcAddSubject(vals.get(1), Integer.parseInt(vals.get(2)), vals.get(3));
                 break;
 
             case "adaugareNota":
                 this.lenCheck(vals, 8, true);
-                menuAddMark(vals.get(1) + " " + vals.get(2), vals.get(3) + " " + vals.get(4), vals.get(5),
+                jdbcAddMark(vals.get(1) + " " + vals.get(2), vals.get(3) + " " + vals.get(4), vals.get(5),
                         vals.get(6), Integer.parseInt(vals.get(7)));
                 break;
 
             case "afisareStudenti":
                 this.lenCheck(vals, 1, true);
-                menuShowStudents();
+                jdbcShowStudents();
                 break;
 
             case "afisareProfesori":
                 this.lenCheck(vals, 1, true);
-                menuShowProfessors();
+                jdbcShowProfessors();
                 break;
 
             case "afisareMaterii":
                 this.lenCheck(vals, 1, true);
-                menuShowSubjects();
+                jdbcShowSubjects();
                 break;
 
             case "afisareNote":
                 this.lenCheck(vals, 1, true);
-                menuShowMarks();
+                jdbcShowMarks();
                 break;
+
+            case "stergereStudent":
+                this.lenCheck(vals, 3, true);
+                jdbcRemoveStudent(vals.get(1) + " " + vals.get(2));
+                break;
+
+            case "stergereProfesor":
+                this.lenCheck(vals, 3, true);
+                jdbcRemoveProfessor(vals.get(1) + " " + vals.get(2));
+                break;
+
+            case "stergereMaterie":
+                this.lenCheck(vals, 2, true);
+                jdbcRemoveSubject(vals.get(1));
+                break;
+
+            case "stergereNota":
+                this.lenCheck(vals, 7, true);
+                jdbcRemoveMark(vals.get(1) + " " + vals.get(2), vals.get(3) + " " + vals.get(4),
+                        vals.get(5), vals.get(6));
+                break;
+
+            case "editareNota":
+                this.lenCheck(vals, 8, true);
+                jdbcUpdateMark(vals.get(1) + " " + vals.get(2), vals.get(3) + " " + vals.get(4),
+                        vals.get(5), vals.get(6), Integer.parseInt(vals.get(7)));
+                break;
+
+            case "editareStudent":
+                this.lenCheck(vals, 8, true);
+                jdbcUpdateStudent(vals.get(1) + " " + vals.get(2), vals.get(3) + " " + vals.get(4),
+                        Integer.parseInt(vals.get(5)), vals.get(6), Integer.parseInt(vals.get(7)));
+                break;
+
+            case "editareProfesor":
+                this.lenCheck(vals, 8, true);
+                jdbcUpdateProfessor(vals.get(1) + " " + vals.get(2), vals.get(3) + " " + vals.get(4),
+                        Integer.parseInt(vals.get(5)), vals.get(6) , Integer.parseInt(vals.get(7)));
+                break;
+
+            case "editareMaterie":
+                this.lenCheck(vals, 4, true);
+                jdbcUpdateSubject(vals.get(1), vals.get(2), Integer.parseInt(vals.get(3)));
+                break;
+
 
             default:
                 throw new Exception ("Comanda necunoscuta. Incearca sa scrii 'ajutor'.");
@@ -323,11 +591,23 @@ public class Menu
                 "'adaugaStudent <nume> <prenume> <varsta> <sex> <specializare> <an>'",
                 "'adaugaMaterie <nume> <nrSemestre> <domeniu>'",
                 "'adaugaNota <numeStudent> <prenumeStudent> <numeProfesor> <prenumeProfesor> " +
-                        "<numeMaterie> <data(in format dd/mm//yyyy> <valoare>'",
+                        "<numeMaterie> <data(in format yyyy/MM/dd> <valoare>'",
                 "'afisareStudenti'",
                 "'afisareProfesori'",
                 "'afisareMaterii'",
                 "'afisareNote'",
+                "'stergereStudent' <nume> <prenume>",
+                "'stergereProfesor' <nume> <prenume>",
+                "'stergereMaterie' <nume>",
+                "'stergereNota' <numeStudent> <prenumeStudent> <numeProfesor> <prenumeProfesor>"
+                                               +"<numeMaterie> <data(in format yyyy/MM/dd)>",
+                "'editareStudent' <numeVechiStudent> <prenumeVechiStudent> <numeNouStudent>" +
+                        "<prenumeNouStudent> <varstaNoua> <specialitateNoua> <anNou>",
+                "'editareProfesor' <numeVechiProfesor> <prenumeVechiProfesor> <numeNouProfesor>" +
+                        "<prenumeNouProfesor> <varstaNoua> <pozitieNoua> <aniDeExperientaNou>",
+                "'editareMaterie' <numeVechiMaterie> <numeNouMaterie> <nrDeSemestreNou>",
+                "'editareNota' <numeStudent> <prenumeStudent> <numeProfesor> <prenumeProfesor> <materie>" +
+                        "<data(in format yyyy/MM/dd)> <valoareNoua>"
         };
 
         if (vals.size() == 1) {
@@ -341,5 +621,3 @@ public class Menu
             System.out.println ("Comanda nu exista");
         }
     }
-
-

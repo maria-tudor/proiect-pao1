@@ -54,7 +54,7 @@ public class CSVProc
 
             wrt.close();
         } catch (IOException e) {
-            System.out.println ("Nu s-apututscrie in fisier.");
+            System.out.println ("Nu s-a putut scrie in fisier.");
             e.printStackTrace ();
         }
     }

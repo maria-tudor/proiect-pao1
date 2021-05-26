@@ -45,4 +45,6 @@ public class Professor extends Person {
     public int getYearsOfExperience() { return years_of_experience; }
 
     public void setPosition(String pos) { this.position = pos; }
+
+    public void setYearsOfExperience(int yrsexp){this.years_of_experience = yrsexp;}
 }

@@ -1,5 +1,6 @@
+import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Vector;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 
 
@@ -46,6 +47,7 @@ public class Facultate
                 for (Subject subject :student.getSubjects ())
                     if (subject.getName ().equals (sub.getName()))
                     {
+                      //  Date convertedDate = new SimpleDateFormat("dd/MM/yyyy").parse(dat);
                         Mark newMark = new Mark(stud, prof, sub, dat, val);
                         found = true;
                     }
@@ -103,7 +105,7 @@ public class Facultate
         return (returnStudents);
     }
 
-    public void loadStudents (ArrayList <ArrayList <String>> students) throws Exception {
+    public void loadStudents (ArrayList <ArrayList <String>> students) {
         for (ArrayList <String> ln : students)
         {
             this.addStudent (ln.get (0), Integer.parseInt (ln.get (1)),
@@ -160,7 +162,7 @@ public class Facultate
         return (returnSubjects);
     }
 
-    public void loadSubjects (ArrayList <ArrayList <String>> subjects) throws Exception
+    public void loadSubjects (ArrayList <ArrayList <String>> subjects)
     {
         for (ArrayList <String> ln : subjects)
             this.addSubject (ln.get (0), Integer.parseInt (ln.get (1)), ln.get(2));
@@ -193,22 +195,31 @@ public class Facultate
 
     public Student findStudent(String nm){
         for (Student stud : students)
-            if (stud.getName() == nm)
+            if (stud.getName().equals(nm))
                 return stud;
         return null;
     }
 
     public Subject findSubject(String nm){
         for (Subject sub : subjects)
-            if (sub.getName() == nm)
+            if (sub.getName().equals( nm))
                 return sub;
         return null;
     }
 
     public Professor findProfessor(String nm){
         for (Professor prof : professors)
-            if (prof.getName() == nm)
+            if (prof.getName().equals(nm))
                 return prof;
+        return null;
+    }
+
+    public Mark findMark(String nmstud, String nmprof, String nmsub, String date) throws ParseException {
+        Date convertedDate = new SimpleDateFormat("yyyy/MM/dd").parse(date);
+        for (Mark mark : marks)
+            if (mark.getStudentName().equals (nmstud) && mark.getSubjectName().equals(nmsub) &&
+                    mark.getProfessorName().equals(nmprof) && mark.getDate().equals(convertedDate))
+                return mark;
         return null;
     }
 
@@ -220,6 +231,104 @@ public class Facultate
                     findSubject(ln.get (2)),
                     new SimpleDateFormat("dd/MM/yyyy").format(ln.get (3)),
                     Integer.parseInt (ln.get (4)));
+    }
+
+    public void removeStudent (String nm)
+    {
+        for (Student student : this.students)
+            if (student.getName ().equals (nm))
+            {
+                for (Professor professor : this.professors)
+                        professor.students.remove (findStudent(nm));
+                this.students.remove(findStudent(nm));
+                break;
+            }
+    }
+
+    public void removeProfessor (String nm)
+    {
+        for (Professor professor : this.professors)
+            if (professor.getName ().equals (nm))
+            {
+                for (Subject subject : this.subjects)
+                        subject.professors.remove(findProfessor(nm));
+                this.professors.remove(findProfessor(nm));
+                break;
+            }
+    }
+
+    public void removeSubject (String nm)
+    {
+        for (Subject subject : this.subjects)
+            if (subject.getName ().equals (nm))
+            {
+                for (Professor professor : this.professors)
+                        professor.subjects.remove (findSubject(nm));
+                for (Student student : this.students)
+                    if (student.subjects.contains(nm))
+                        student.subjects.remove(findSubject(nm));
+                this.subjects.remove(findProfessor(nm));
+                break;
+            }
+    }
+
+    public void removeMark(String nmstud, String nmprof, String nmsub, String date) throws ParseException {
+        Date convertedDate = new SimpleDateFormat("yyyy/MM/dd").parse(date);
+        for (Mark mark : this.marks)
+            if (mark.getStudentName().equals (nmstud) && mark.getSubjectName().equals(nmsub) &&
+            mark.getProfessorName().equals(nmprof) && mark.getDate().equals(convertedDate))
+            {
+                for (Student student : this.students)
+                        student.marks.remove (findMark(nmstud, nmprof, nmsub, date));
+                this.marks.remove(findMark(nmstud,nmprof, nmsub, date));
+                break;
+            }
+    }
+
+    public void updateMark(String nmstudVechi, String nmprofVechi, String nmsubVechi, String dateVechi,
+                            int valNou) throws ParseException {
+        Date convertedDate = new SimpleDateFormat("yyyy/MM/dd").parse(dateVechi);
+        for(Mark mark : this.marks){
+            if(mark.getStudentName().equals (nmstudVechi) && mark.getSubjectName().equals(nmsubVechi) &&
+                    mark.getProfessorName().equals(nmprofVechi) && mark.getDate().equals(convertedDate)){
+                mark.setValue(valNou);
+            }
+        }
+    }
+
+
+    public void updateStudent(String nmVechi, String nm, int ag, String mjr, int yr){
+
+        for(Student student : this.students){
+            if(student.getName().equals (nmVechi)){
+                student.setName(nm);
+                student.setAge(ag);
+                student.setMajor(mjr);
+                student.setYear(yr);
+            }
+        }
+    }
+
+    public void updateProfessor(String nmVechi, String nm, int ag, String pos, int yrsexp){
+
+        for(Professor professor : this.professors){
+            if(professor.getName().equals (nmVechi)){
+                professor.setName(nm);
+                professor.setAge(ag);
+                professor.setPosition(pos);
+                professor.setYearsOfExperience(yrsexp);
+            }
+        }
+    }
+
+    public void updateSubject(String nmVechi, String nm, int sem){
+
+        for(Subject subject : this.subjects){
+            if(subject.getName().equals (nmVechi)){
+                subject.setName(nm);
+                subject.setSemesters(sem);
+            }
+        }
     }
 
 }

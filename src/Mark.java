@@ -15,7 +15,8 @@ public class Mark {
         this.student = stud;
         this.professor = prof;
         this.subject = sub;
-        this.data = new SimpleDateFormat("dd/MM/yyyy").parse(dat);
+        Date convertedDate = new SimpleDateFormat("yyyy/MM/dd").parse(dat);
+        this.data = convertedDate;
         this.value = val;
         addNew();
     }
@@ -39,7 +40,8 @@ public class Mark {
         }};
 
     public void display(){
-        System.out.println("Student name: " + this.student.getName() + ", Professor name: " + this.professor.getName() + ", Subject name: " + this.subject.getName() + ", Data: " + this.data + ", Nota: " + this.value);
+        System.out.println("Student name: " + this.student.getName() + ", Professor name: " + this.professor.getName()
+                + ", Subject name: " + this.subject.getName() + ", Data: " + this.data + ", Nota: " + this.value);
     }
 
     public Date getDate() {
@@ -65,4 +67,5 @@ public class Mark {
     public void setValue(int val) {
         this.value = val;
     }
+
 }

@@ -14,17 +14,14 @@ public class Subject {
     }
 
     public void display(){
-        System.out.println("Subject: " + this.name + ", Duration: " + this.semesters + " semesters" + ", Field: " + this.field);
+        System.out.println("Subject: " + this.name + ", Duration: " + this.semesters + " semesters" + ", Field: " +
+                this.field);
     }
 
     public void addProfessor(Professor newProfessor){
         if(!professors.contains(newProfessor)){
             professors.add(newProfessor);
         }
-    }
-
-    public void removeProfessor(Professor removedProfessor){
-        professors.remove(removedProfessor);
     }
 
     public int getSemesters(){ return semesters;}

@@ -2,6 +2,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class Main {
+
     public static void main(String[] vals) throws Exception {
         Date data = new SimpleDateFormat("dd/MM/yyyy").parse("20/06/2015");
         System.out.println(data);
@@ -10,6 +11,7 @@ public class Main {
 
         menu.console ();
     }
+
 }
     /*
 // Meniul mai trebuie modificat deoarece am o problema cu input-urile, dar am apelat majoritatea functiilor direct aici

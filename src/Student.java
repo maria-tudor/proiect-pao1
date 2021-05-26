@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class Student extends Person {
     ArrayList<Subject> subjects= new ArrayList<Subject>();
     ArrayList<Mark> marks= new ArrayList<Mark>();
-    private final String major;
+    private String major;
     private int year;
 
     public Student(String nm, int ag, String sx, String mjr, int yr){
@@ -18,6 +18,10 @@ public class Student extends Person {
     }
 
     public String getMajor(){ return major; }
+
+    public void setMajor(String mjr){this.major = mjr;}
+
+    public void setYear(int yr){this.year = yr;}
 
     public int getYear(){ return year;}
 
@@ -58,8 +62,8 @@ public class Student extends Person {
     }
 
     public void showMarks(){
-        for(int i = 0; i < this.marks.size(); i++){
-            System.out.print(marks.get(i).getValue() + " ");
+        for (Mark mark : this.marks) {
+            System.out.print(mark.getValue() + " ");
         }
     }
 
